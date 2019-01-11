@@ -17,17 +17,20 @@ import (
 
 	"io/ioutil"
 
-	"github.com/openfaas/faas/gateway/handlers"
+	"github.com/openfaas/faas-provider/auth"
 	"github.com/openfaas/faas/gateway/requests"
+	"github.com/openfaas/faas/gateway/scaling"
 )
 
 // NewExternalServiceQuery proxies service queries to external plugin via HTTP
-func NewExternalServiceQuery(externalURL url.URL) handlers.ServiceQuery {
+func NewExternalServiceQuery(externalURL url.URL, credentials *auth.BasicAuthCredentials) scaling.ServiceQuery {
+	timeout := 3 * time.Second
+
 	proxyClient := http.Client{
 		Transport: &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
 			DialContext: (&net.Dialer{
-				Timeout:   3 * time.Second,
+				Timeout:   timeout,
 				KeepAlive: 0,
 			}).DialContext,
 			MaxIdleConns:          1,
@@ -40,6 +43,7 @@ func NewExternalServiceQuery(externalURL url.URL) handlers.ServiceQuery {
 	return ExternalServiceQuery{
 		URL:         externalURL,
 		ProxyClient: proxyClient,
+		Credentials: credentials,
 	}
 }
 
@@ -47,6 +51,7 @@ func NewExternalServiceQuery(externalURL url.URL) handlers.ServiceQuery {
 type ExternalServiceQuery struct {
 	URL         url.URL
 	ProxyClient http.Client
+	Credentials *auth.BasicAuthCredentials
 }
 
 // ScaleServiceRequest request scaling of replica
@@ -56,8 +61,9 @@ type ScaleServiceRequest struct {
 }
 
 // GetReplicas replica count for function
-func (s ExternalServiceQuery) GetReplicas(serviceName string) (handlers.ServiceQueryResponse, error) {
+func (s ExternalServiceQuery) GetReplicas(serviceName string) (scaling.ServiceQueryResponse, error) {
 	var err error
+	var emptyServiceQueryResponse scaling.ServiceQueryResponse
 
 	function := requests.Function{}
 
@@ -65,10 +71,13 @@ func (s ExternalServiceQuery) GetReplicas(serviceName string) (handlers.ServiceQ
 
 	req, _ := http.NewRequest(http.MethodGet, urlPath, nil)
 
+	if s.Credentials != nil {
+		req.SetBasicAuth(s.Credentials.User, s.Credentials.Password)
+	}
+
 	res, err := s.ProxyClient.Do(req)
 
 	if err != nil {
-
 		log.Println(urlPath, err)
 	} else {
 
@@ -82,20 +91,22 @@ func (s ExternalServiceQuery) GetReplicas(serviceName string) (handlers.ServiceQ
 			if err != nil {
 				log.Println(urlPath, err)
 			}
+		} else {
+			return emptyServiceQueryResponse, fmt.Errorf("server returned non-200 status code (%d) for function, %s", res.StatusCode, serviceName)
 		}
 	}
 
-	minReplicas := uint64(handlers.DefaultMinReplicas)
-	maxReplicas := uint64(handlers.DefaultMaxReplicas)
-	scalingFactor := uint64(handlers.DefaultScalingFactor)
+	minReplicas := uint64(scaling.DefaultMinReplicas)
+	maxReplicas := uint64(scaling.DefaultMaxReplicas)
+	scalingFactor := uint64(scaling.DefaultScalingFactor)
 	availableReplicas := function.AvailableReplicas
 
 	if function.Labels != nil {
 		labels := *function.Labels
 
-		minReplicas = extractLabelValue(labels[handlers.MinScaleLabel], minReplicas)
-		maxReplicas = extractLabelValue(labels[handlers.MaxScaleLabel], maxReplicas)
-		extractedScalingFactor := extractLabelValue(labels[handlers.ScalingFactorLabel], scalingFactor)
+		minReplicas = extractLabelValue(labels[scaling.MinScaleLabel], minReplicas)
+		maxReplicas = extractLabelValue(labels[scaling.MaxScaleLabel], maxReplicas)
+		extractedScalingFactor := extractLabelValue(labels[scaling.ScalingFactorLabel], scalingFactor)
 
 		if extractedScalingFactor >= 0 && extractedScalingFactor <= 100 {
 			scalingFactor = extractedScalingFactor
@@ -104,7 +115,7 @@ func (s ExternalServiceQuery) GetReplicas(serviceName string) (handlers.ServiceQ
 		}
 	}
 
-	return handlers.ServiceQueryResponse{
+	return scaling.ServiceQueryResponse{
 		Replicas:          function.Replicas,
 		MaxReplicas:       maxReplicas,
 		MinReplicas:       minReplicas,
@@ -129,6 +140,11 @@ func (s ExternalServiceQuery) SetReplicas(serviceName string, count uint64) erro
 
 	urlPath := fmt.Sprintf("%ssystem/scale-function/%s", s.URL.String(), serviceName)
 	req, _ := http.NewRequest(http.MethodPost, urlPath, bytes.NewReader(requestBody))
+
+	if s.Credentials != nil {
+		req.SetBasicAuth(s.Credentials.User, s.Credentials.Password)
+	}
+
 	defer req.Body.Close()
 	res, err := s.ProxyClient.Do(req)
 

@@ -180,17 +180,17 @@ app.controller("home", ['$scope', '$log', '$http', '$location', '$interval', '$f
                 });
         };
 
-        var refreshData = function() {
+        var refreshData = function () {
             var previous = $scope.functions;
 
-            var cl = function(previousItems) {
-                $http.get("../system/functions").then(function(response) {
+            var cl = function (previousItems) {
+                $http.get("../system/functions").then(function (response) {
                     if (response && response.data) {
                         if (previousItems.length != response.data.length) {
                             $scope.functions = response.data;
-                            
+
                             // update the selected function object because the newly fetched object from the API becomes a different object
-                            var filteredSelectedFunction = $filter('filter')($scope.functions, {name: $scope.selectedFunction.name}, true);
+                            var filteredSelectedFunction = $filter('filter')($scope.functions, { name: $scope.selectedFunction.name }, true);
                             if (filteredSelectedFunction && filteredSelectedFunction.length > 0) {
                                 $scope.selectedFunction = filteredSelectedFunction[0];
                             } else {
@@ -200,6 +200,7 @@ app.controller("home", ['$scope', '$log', '$http', '$location', '$interval', '$f
                             for (var i = 0; i < $scope.functions.length; i++) {
                                 for (var j = 0; j < response.data.length; j++) {
                                     if ($scope.functions[i].name == response.data[j].name) {
+                                        $scope.functions[i].image = response.data[j].image;
                                         $scope.functions[i].replicas = response.data[j].replicas;
                                         $scope.functions[i].invocationCount = response.data[j].invocationCount;
                                     }
@@ -351,7 +352,6 @@ app.controller("home", ['$scope', '$log', '$http', '$location', '$interval', '$f
 function uuidv4() {
     var cryptoInstance = window.crypto || window.msCrypto; // for IE11
     return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, function(c) {
-      return (c ^ cryptoInstance.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        return (c ^ cryptoInstance.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     })
-  }
-  
+}  

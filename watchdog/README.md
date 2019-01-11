@@ -9,6 +9,10 @@ The watchdog provides an unmanaged and generic interface between the outside wor
 
 Every function needs to embed this binary and use it as its `ENTRYPOINT` or `CMD`, in effect it is the init process for your container. Once your process is forked the watchdog passses in the HTTP request via `stdin` and reads a HTTP response via `stdout`. This means your process does not need to know anything about the web or HTTP.
 
+### Next-gen: of-watchdog
+
+Are you looking for more control over your HTTP responses, "hot functions", persistent connection pools or to cache a machine-learning model in memory? Then check out the *http mode* of the new [of-watchdog](https://github.com/openfaas-incubator/of-watchdog).
+
 ## Create a new function the easy way
 
 **Create a function via the CLI**
@@ -34,15 +38,24 @@ Here's how to package your function if you don't want to use the CLI or have exi
 Example Dockerfile for an `echo` function:
 
 ```
-FROM alpine:3.7
+FROM alpine:3.8
 
-ADD https://github.com/openfaas/faas/releases/download/0.8.0/fwatchdog /usr/bin
+ADD https://github.com/openfaas/faas/releases/download/0.9.6/fwatchdog /usr/bin
 RUN chmod +x /usr/bin/fwatchdog
 
 # Define your binary here
 ENV fprocess="/bin/cat"
 
 CMD ["fwatchdog"]
+```
+
+**Tip:**
+You can optimize Docker to cache getting the watchdog by using curl, instead of ADD.
+To do so, replace the related lines with:
+```
+RUN apk --no-cache add curl \
+    && curl -sL https://github.com/openfaas/faas/releases/download/0.9.6/fwatchdog > /usr/bin/fwatchdog \
+    && chmod +x /usr/bin/fwatchdog
 ```
 
 **Implementing a health-check**
@@ -101,6 +114,16 @@ Forking a new process per request has advantages such as process isolation, port
 A new version of the watchdog is being tested over at [openfaas-incubator/of-watchdog](https://github.com/openfaas-incubator/of-watchdog).
 
 This re-write is mainly structural for on-going maintenance. It will be a drop-in replacement for the existing watchdog and also has binary releases available.
+
+### Graceful shutdowns
+
+The watchdog is capable of working with health-checks to provide a graceful shutdown.
+
+When a `SIGTERM` signal is detected within the watchdog process a Go routine will remove the `/tmp/.lock` file and mark the HTTP health-check as unhealthy and return HTTP 503. The code will then wait for the duration specified in `write_timeout`. During this window the container-orchestrator's health-check must run and complete.
+
+Now the orchestrator will mark this replica as unhealthy and remove it from the pool of valid HTTP endpoints.
+
+Now we will stop accepting new connections and wait for the value defined in `write_timeout` before finally allowing the process to exit.
 
 ### Working with HTTP headers
 

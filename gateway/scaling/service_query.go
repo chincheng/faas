@@ -1,4 +1,7 @@
-package handlers
+// Copyright (c) OpenFaaS Author(s). All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+package scaling
 
 // ServiceQuery provides interface for replica querying/setting
 type ServiceQuery interface {

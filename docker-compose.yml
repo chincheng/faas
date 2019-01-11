@@ -3,7 +3,7 @@ services:
     gateway:
         ports:
             - 8080:8080
-        image: openfaas/gateway:0.8.11
+        image: openfaas/gateway:0.9.14
         networks:
             - functions
         environment:
@@ -18,7 +18,7 @@ services:
             direct_functions_suffix: ""
             basic_auth: "${BASIC_AUTH:-true}"
             secret_mount_path: "/run/secrets/"
-            scale_from_zero: "false"
+            scale_from_zero: "true"
         deploy:
             resources:
                 # limits:   # Enable if you want to limit memory usage
@@ -41,15 +41,15 @@ services:
     faas-swarm:
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock"
-        # ports:
-            # - 8081:8080
-        image:  openfaas/faas-swarm:0.4.1
+        image:  openfaas/faas-swarm:0.6.1
         networks:
             - functions
         environment:
             read_timeout:  "300s"   # set both here, and on your functions
             write_timeout: "300s"   # set both here, and on your functions
             DOCKER_API_VERSION: "1.30"
+            basic_auth: "${BASIC_AUTH:-true}"
+            secret_mount_path: "/run/secrets/"
         deploy:
             placement:
                 constraints:
@@ -65,11 +65,14 @@ services:
                 delay: 5s
                 max_attempts: 20
                 window: 380s
+        secrets:
+            - basic-auth-user
+            - basic-auth-password
 
     nats:
-        image: nats-streaming:0.6.0
-        # Uncomment the following port mappings if you wish to expose the 
-        # NATS client and/or management ports
+        image: nats-streaming:0.11.2
+        # Uncomment the following port mappings if you wish to expose the
+        # NATS client and/or management ports you must also add `-m 8222` to the command
         # ports:
         #     - 4222:4222
         #     - 8222:8222
@@ -87,12 +90,14 @@ services:
                     - 'node.platform.os == linux'
 
     queue-worker:
-        image: openfaas/queue-worker:0.4.8
+        image: openfaas/queue-worker:0.5.4
         networks:
             - functions
         environment:
             max_inflight: "1"
             ack_wait: "300s"    # Max duration of any async task / request
+            basic_auth: "${BASIC_AUTH:-true}"
+            secret_mount_path: "/run/secrets/"
         deploy:
             resources:
                 limits:
@@ -107,12 +112,16 @@ services:
             placement:
                 constraints:
                     - 'node.platform.os == linux'
+        secrets:
+            - basic-auth-user
+            - basic-auth-password
+
     # End services
 
     # Start monitoring
 
     prometheus:
-        image: prom/prometheus:v2.2.0
+        image: prom/prometheus:v2.3.1
         environment:
             no_proxy: "gateway"
         configs:
@@ -139,7 +148,7 @@ services:
                     memory: 200M
 
     alertmanager:
-        image: prom/alertmanager:v0.15.0-rc.0
+        image: prom/alertmanager:v0.15.0
         environment:
             no_proxy: "gateway"
         command:
@@ -158,7 +167,7 @@ services:
                 reservations:
                     memory: 20M
             placement:
-                constraints: 
+                constraints:
                     - 'node.role == manager'
                     - 'node.platform.os == linux'
         configs:

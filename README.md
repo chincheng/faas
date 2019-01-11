@@ -6,7 +6,7 @@ Status](https://travis-ci.org/openfaas/faas.svg?branch=master)](https://travis-c
 
 ![OpenFaaS Logo](https://blog.alexellis.io/content/images/2017/08/faas_side.png)
 
-OpenFaaS (Functions as a Service) is a framework for building serverless functions with Docker and Kubernetes which has first class support for metrics. Any process can be packaged as a function enabling you to consume a range of web events without repetitive boiler-plate coding.
+OpenFaaS&reg; (Functions as a Service) is a framework for building Serverless functions with Docker and Kubernetes which has first-class support for metrics. Any process can be packaged as a function enabling you to consume a range of web events without repetitive boiler-plate coding.
 
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fold_left.svg?style=social&label=Follow%20%40openfaas)](https://twitter.com/openfaas)
 
@@ -16,7 +16,7 @@ OpenFaaS (Functions as a Service) is a framework for building serverless functio
 * Write functions in any language for Linux or Windows and package in Docker/OCI image format
 * Portable - runs on existing hardware or public/private cloud - [Kubernetes](https://github.com/openfaas/faas-netes) and Docker Swarm native
 * [CLI](http://github.com/openfaas/faas-cli) available with YAML format for templating and defining functions
-* Auto-scales as demand increases
+* Auto-scales as demand increases [including to zero](https://www.openfaas.com/blog/zero-scale/)
 
 ## Overview of OpenFaaS
 
@@ -24,28 +24,34 @@ OpenFaaS (Functions as a Service) is a framework for building serverless functio
 
 ![Stack](https://pbs.twimg.com/media/DFrkF4NXoAAJwN2.jpg)
 
-## Press-kit/media/swag
+### Press / Branding / Sponsors
 
-For stickers, swag, media or press-kit information head over to [openfaas/media](https://github.com/openfaas/media/blob/master/README.md)
+For information on branding, the press-kit, registered entities and sponsorship head over to the [openfaas/media](https://github.com/openfaas/media/blob/master/README.md) repo. You can also order custom SWAG or take part in the weekly Twitter contest [#FaaSFriday](https://twitter.com/search?q=faasfriday&src=typd)
 
-## Governance
+Looking for statistics? This project does not use a mono-repo, but is split across several components. Use [Ken Fukuyama's dashboard](https://kenfdev.o6s.io/github-stats-page) to gather accurate counts on contributors, stars and forks across the [GitHub organisation](https://github.com/openfaas).
 
-OpenFaaS is an independent project created by [Alex Ellis](https://www.alexellis.io) which is now being built and shaped by a growing community of contributors. Project website: [openfaas.com](https://www.openfaas.com).
+Incubator projects are not counted in these totals and are hosted under [openfaas-incubator](https://github.com/openfaas-incubator) awaiting graduation.
 
-## Users
+### Governance
 
-[View some of our end-users](https://docs.openfaas.com/#users-of-openfaas) or [get in touch to be listed](https://github.com/openfaas/faas/issues/776).
+OpenFaaS&reg; is an independent project founded by [Alex Ellis](https://www.alexellis.io) which is now being built and shaped by a growing community of contributors, GitHub Organisation members, Core contributors and end-users. More at: [openfaas.com](https://www.openfaas.com).
 
-> Please support [OpenFaaS on Patreon](https://www.patreon.com/alexellis)). Help us hit our goals and get to back a great project at the same time. View the [List of backers and sponsors](https://github.com/openfaas/faas/blob/master/BACKERS.md).
+### Users
 
-Thank you for your help
+[View our end-users](https://docs.openfaas.com/#users-of-openfaas) or get in touch to [have your company added](https://github.com/openfaas/faas/issues/776).
 
-### Function Watchdog
+> Please support [OpenFaaS on Patreon](https://www.patreon.com/alexellis)) and back a great community at the same time. You will be listed as a [backers or sponsor here](https://github.com/openfaas/faas/blob/master/BACKERS.md).
+
+Thank you for your support.
+
+### Technical overview
+
+#### Function Watchdog
 
 * You can make any Docker image into a serverless function by adding the *Function Watchdog* (a tiny Golang HTTP server)
-* The *Function Watchdog* is the entrypoint allowing HTTP requests to be forwarded to the target process via STDIN. The response is sent back to the caller by writing to STDOUT from your application.
+* The *Function Watchdog* is the entrypoint allowing HTTP requests to be forwarded to the target process via STDIN or HTTP. The response is sent back to the caller by writing to STDOUT or HTTP from your application.
 
-### API Gateway / UI Portal
+#### API Gateway / UI Portal
 
 * The API Gateway provides an external route into your functions and collects Cloud Native metrics through Prometheus.
 * Your API Gateway will scale functions according to demand by altering the service replica count in the Docker Swarm or Kubernetes API.
@@ -53,7 +59,7 @@ Thank you for your help
 
 > The API Gateway is a RESTful micro-service and you can view the [Swagger docs here](https://github.com/openfaas/faas/tree/master/api-docs).
 
-### CLI
+#### CLI
 
 Any container or process in a Docker container can be a serverless function in FaaS. Using the [FaaS CLI](http://github.com/openfaas/faas-cli) you can deploy your functions quickly.
 
@@ -63,18 +69,20 @@ Create new functions from templates for Node.js, Python, [Go](https://blog.alexe
 
 When you have OpenFaaS configured you can [get started with the CLI here](https://blog.alexellis.io/quickstart-openfaas-cli/)
 
-### Function examples
+#### Function examples
 
 You can generate new functions using the FaaS-CLI and built-in templates or use any binary for Windows or Linux in a Docker container.
 
-* Python example:
+Official templates exist for many popular languages and are easily extensible with Dockerfiles. Here is an example with Python 3 and Node.js:
+
+* Python 3 example:
 
 ```python
 import requests
 
 def handle(req):
     r =  requests.get(req, timeout = 1)
-    print(req +" => " + str(r.status_code))
+    return "{} => {:d}".format(req, r.status_code)
 ```
 *handler.py*
 
@@ -84,24 +92,19 @@ def handle(req):
 "use strict"
 
 module.exports = (callback, context) => {
-    callback(null, {"message": "You said: " + context})
+    var err;
+    callback(err, {"message": "You said: " + context})
 }
 ```
 *handler.js*
 
-Other [Sample functions](https://github.com/openfaas/faas/tree/master/sample-functions) are available in the Github repository in a range of programming languages.
-
-## Documentation
-
-We are building a new documentation site at [docs.openfaas.com](http://docs.openfaas.com). 
-The source repository for the documentation website is [openfaas/docs](https://github.com/openfaas/docs).
-
-For all other guides, tutorials, trouble-shooting and blog posts head over to our [guides page](https://github.com/openfaas/faas/tree/master/guide) on GitHub.
+The easiest way to get started with functions is to take the workshop or one of the tutorials in the documentation.
 
 ## Get started with OpenFaaS
 
 ### Official documentation and blog
-See our documentation on [docs.openfaas.com](https://docs.openfaas.com/)
+
+See our documentation on [docs.openfaas.com](https://docs.openfaas.com/). The source repository for the documentation website is [openfaas/docs](https://github.com/openfaas/docs).
 
 Read latest news on OpenFaaS from the community [blog](https://www.openfaas.com/blog/)
 
@@ -129,7 +132,6 @@ Simply follow the deployment guide for Swarm above in a new session
 
 > You will need a free Docker Hub account to get access. Get one here: [Docker Hub](https://hub.docker.com/)
 
-
 #### Begin the TestDrive
 
 * [Begin the TestDrive with Docker Swarm](https://github.com/openfaas/faas/blob/master/TestDrive.md)
@@ -140,17 +142,23 @@ Here is a screenshot of the API gateway portal - designed for ease of use.
 
 ## Find out more about OpenFaaS
 
-### SkillsMatter video presentation
+### Digital Transformation of Vision Banco Paraguay with Serverless Functions @ KubeCon late-2018
 
-Great overview of OpenFaaS features, users and roadmap
+[HD video co-presenting at KubeCon with Patricio Diaz Senior Analyst, Vision Banco SAECA](https://kccna18.sched.com/event/GraO/digital-transformation-of-vision-banco-paraguay-with-serverless-functions-alex-ellis-vmware-patricio-diaz-vision-banco-saeca)
 
-* [HD Video](https://skillsmatter.com/skillscasts/10813-faas-and-furious-0-to-serverless-in-60-seconds-anywhere)
+### Serverless Beyond the Hype (goto Copenhagen) late-2018
 
-### OpenFaaS presents to CNCF Serverless workgroup
+Overview of the Serverless landscape for Kubernetes, OpenFaaS and OpenFaaS Cloud with live demos and most update information. [View on Android or iPhone](https://gotocph.com/2018/sessions/592)
 
-* [Video and blog post](https://blog.alexellis.io/openfaas-cncf-workgroup/)
+### The Cube interview @ DevNet Create mid-2018
 
-### Closing Keynote at Dockercon 2017
+* [2018 update on the OpenFaaS story](https://www.youtube.com/watch?v=J8UYZ1GXNTQ)
+
+### TechFieldDay presentation (Dockercon EU) late-2017
+
+15 minute overview with demos on Kubernetes and with Alexa - [HD YouTube video](https://www.youtube.com/watch?v=C3agSKv2s_w&list=PLlIapFDp305AiwA17mUNtgi5-u23eHm5j&index=1)
+
+### Closing Keynote at Dockercon early-2017
 
 Functions as a Service or FaaS was a winner in the Cool Hacks contest for Dockercon 2017.
 
@@ -181,9 +189,13 @@ Please see the guide on [community & contributing](https://docs.openfaas.com/com
 
 #### Roadmap
 
-The roadmap is represented in [GitHub issues](https://github.com/openfaas/faas/issues) and a Trello board. There is also a historical ROADMAP file in the [main faas repository](https://github.com/openfaas/faas/blob/master/ROADMAP.md).
+The roadmap for OpenFaaS is represented in [GitHub issues](https://github.com/openfaas/faas/issues) and a Trello board. There is also a historical ROADMAP file in the [main faas repository](https://github.com/openfaas/faas/blob/master/ROADMAP.md).
 
-### Other
+##### Roadmap: OpenFaaS Cloud
+
+[OpenFaaS Cloud](https://github.com/openfaas/openfaas-cloud) is a platform built on top of the OpenFaaS framework which enables a multi-user experience driven by GitOps. It can be installed wherever you already have OpenFaaS and packages a dashboard along with CI/CD integration with GitHub so that you can push code to a private or public Git repo and get live HTTPS endpoints.
+
+#### Dashboards
 
 Example of a Grafana dashboards linked to OpenFaaS showing auto-scaling live in action: [here](https://grafana.com/dashboards/3526)
 

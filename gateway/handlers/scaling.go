@@ -1,4 +1,4 @@
-// Copyright (c) OpenFaaS Project. All rights reserved.
+// Copyright (c) OpenFaaS Author(s). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package handlers
@@ -7,84 +7,47 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+
+	"github.com/openfaas/faas/gateway/scaling"
 )
 
-// ScalingConfig for scaling behaviours
-type ScalingConfig struct {
-	MaxPollCount         uint
-	FunctionPollInterval time.Duration
-	CacheExpiry          time.Duration
-	ServiceQuery         ServiceQuery
-}
-
 // MakeScalingHandler creates handler which can scale a function from
-// zero to 1 replica(s).
-func MakeScalingHandler(next http.HandlerFunc, upstream http.HandlerFunc, config ScalingConfig) http.HandlerFunc {
-	cache := FunctionCache{
-		Cache:  make(map[string]*FunctionMeta),
-		Expiry: config.CacheExpiry,
-	}
+// zero to N replica(s). After scaling the next http.HandlerFunc will
+// be called. If the function is not ready after the configured
+// amount of attempts / queries then next will not be invoked and a status
+// will be returned to the client.
+func MakeScalingHandler(next http.HandlerFunc, config scaling.ScalingConfig) http.HandlerFunc {
+
+	scaler := scaling.NewFunctionScaler(config)
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		functionName := getServiceName(r.URL.String())
+		res := scaler.Scale(functionName)
 
-		if serviceQueryResponse, hit := cache.Get(functionName); hit && serviceQueryResponse.AvailableReplicas > 0 {
-			next.ServeHTTP(w, r)
+		if !res.Found {
+			errStr := fmt.Sprintf("error finding function %s: %s", functionName, res.Error.Error())
+			log.Printf("Scaling: %s", errStr)
+
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte(errStr))
 			return
 		}
 
-		queryResponse, err := config.ServiceQuery.GetReplicas(functionName)
-		cache.Set(functionName, queryResponse)
+		if res.Error != nil {
+			errStr := fmt.Sprintf("error finding function %s: %s", functionName, res.Error.Error())
+			log.Printf("Scaling: %s", errStr)
 
-		if err != nil {
-			var errStr string
-			errStr = fmt.Sprintf("error finding function %s: %s", functionName, err.Error())
-
-			log.Printf(errStr)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errStr))
 			return
 		}
 
-		if queryResponse.AvailableReplicas == 0 {
-			minReplicas := uint64(1)
-			if queryResponse.MinReplicas > 0 {
-				minReplicas = queryResponse.MinReplicas
-			}
-
-			err := config.ServiceQuery.SetReplicas(functionName, minReplicas)
-			if err != nil {
-				errStr := fmt.Errorf("unable to scale function [%s], err: %s", functionName, err)
-				log.Printf(errStr.Error())
-
-				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte(errStr.Error()))
-				return
-			}
-
-			for i := 0; i < int(config.MaxPollCount); i++ {
-				queryResponse, err := config.ServiceQuery.GetReplicas(functionName)
-				cache.Set(functionName, queryResponse)
-
-				if err != nil {
-					errStr := fmt.Sprintf("error: %s", err.Error())
-					log.Printf(errStr)
-
-					w.WriteHeader(http.StatusInternalServerError)
-					w.Write([]byte(errStr))
-					return
-				}
-
-				if queryResponse.AvailableReplicas > 0 {
-					break
-				}
-
-				time.Sleep(config.FunctionPollInterval)
-			}
+		if res.Available {
+			next.ServeHTTP(w, r)
+			return
 		}
 
-		next.ServeHTTP(w, r)
+		log.Printf("[Scale] function=%s 0=>N timed-out after %f seconds", functionName, res.Duration.Seconds())
 	}
 }

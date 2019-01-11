@@ -6,3 +6,6 @@ fwatchdog-armhf
 .idea
 certifier
 .editorconfig
+/contrib/staging/
+**/*.sha256
+.vagrant

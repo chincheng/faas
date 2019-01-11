@@ -1,7 +1,7 @@
-// Copyright (c) OpenFaaS Project. All rights reserved.
+// Copyright (c) OpenFaaS Author(s). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package handlers
+package scaling
 
 import (
 	"sync"
@@ -31,6 +31,7 @@ type FunctionCache struct {
 // Set replica count for functionName
 func (fc *FunctionCache) Set(functionName string, serviceQueryResponse ServiceQueryResponse) {
 	fc.Sync.Lock()
+	defer fc.Sync.Unlock()
 
 	if _, exists := fc.Cache[functionName]; !exists {
 		fc.Cache[functionName] = &FunctionMeta{}
@@ -40,23 +41,23 @@ func (fc *FunctionCache) Set(functionName string, serviceQueryResponse ServiceQu
 	entry.LastRefresh = time.Now()
 	entry.ServiceQueryResponse = serviceQueryResponse
 
-	fc.Sync.Unlock()
 }
 
 // Get replica count for functionName
 func (fc *FunctionCache) Get(functionName string) (ServiceQueryResponse, bool) {
+
+	fc.Sync.Lock()
+	defer fc.Sync.Unlock()
+
 	replicas := ServiceQueryResponse{
 		AvailableReplicas: 0,
 	}
 
 	hit := false
-	fc.Sync.Lock()
-
 	if val, exists := fc.Cache[functionName]; exists {
 		replicas = val.ServiceQueryResponse
 		hit = !val.Expired(fc.Expiry)
 	}
 
-	fc.Sync.Unlock()
 	return replicas, hit
 }

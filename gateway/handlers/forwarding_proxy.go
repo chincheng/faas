@@ -1,3 +1,6 @@
+// Copyright (c) OpenFaaS Author(s). All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package handlers
 
 import (
@@ -6,6 +9,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -15,9 +20,20 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+// functionMatcher parses out the service name (group 1) and rest of path (group 2).
+var functionMatcher = regexp.MustCompile("^/?(?:async-)?function/([^/?]+)([^?]*)")
+
+// Indices and meta-data for functionMatcher regex parts
+const (
+	hasPathCount = 3
+	routeIndex   = 0 // routeIndex corresponds to /function/ or /async-function/
+	nameIndex    = 1 // nameIndex is the function name
+	pathIndex    = 2 // pathIndex is the path i.e. /employee/:id/
+)
+
 // HTTPNotifier notify about HTTP request/response
 type HTTPNotifier interface {
-	Notify(method string, URL string, statusCode int, duration time.Duration)
+	Notify(method string, URL string, originalURL string, statusCode int, duration time.Duration)
 }
 
 // BaseURLResolver URL resolver for upstream requests
@@ -25,12 +41,18 @@ type BaseURLResolver interface {
 	Resolve(r *http.Request) string
 }
 
+// URLPathTransformer Transform the incoming URL path for upstream requests
+type URLPathTransformer interface {
+	Transform(r *http.Request) string
+}
+
 // MakeForwardingProxyHandler create a handler which forwards HTTP requests
-func MakeForwardingProxyHandler(proxy *types.HTTPClientReverseProxy, notifiers []HTTPNotifier, baseURLResolver BaseURLResolver) http.HandlerFunc {
+func MakeForwardingProxyHandler(proxy *types.HTTPClientReverseProxy, notifiers []HTTPNotifier, baseURLResolver BaseURLResolver, urlPathTransformer URLPathTransformer) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		baseURL := baseURLResolver.Resolve(r)
+		originalURL := r.URL.String()
 
-		requestURL := r.URL.Path
+		requestURL := urlPathTransformer.Transform(r)
 
 		start := time.Now()
 
@@ -40,25 +62,30 @@ func MakeForwardingProxyHandler(proxy *types.HTTPClientReverseProxy, notifiers [
 		if err != nil {
 			log.Printf("error with upstream request to: %s, %s\n", requestURL, err.Error())
 		}
+
 		for _, notifier := range notifiers {
-			notifier.Notify(r.Method, requestURL, statusCode, seconds)
+			notifier.Notify(r.Method, requestURL, originalURL, statusCode, seconds)
 		}
 	}
 }
 
-func buildUpstreamRequest(r *http.Request, url string) *http.Request {
+func buildUpstreamRequest(r *http.Request, baseURL string, requestURL string) *http.Request {
+	url := baseURL + requestURL
 
 	if len(r.URL.RawQuery) > 0 {
 		url = fmt.Sprintf("%s?%s", url, r.URL.RawQuery)
 	}
 
 	upstreamReq, _ := http.NewRequest(r.Method, url, nil)
-	if len(r.Host) > 0 {
-		upstreamReq.Host = r.Host
-	}
+
 	copyHeaders(upstreamReq.Header, &r.Header)
 
-	upstreamReq.Header["X-Forwarded-For"] = []string{r.RemoteAddr}
+	if len(r.Host) > 0 && upstreamReq.Header.Get("X-Forwarded-Host") == "" {
+		upstreamReq.Header["X-Forwarded-Host"] = []string{r.Host}
+	}
+	if upstreamReq.Header.Get("X-Forwarded-For") == "" {
+		upstreamReq.Header["X-Forwarded-For"] = []string{r.RemoteAddr}
+	}
 
 	if r.Body != nil {
 		upstreamReq.Body = r.Body
@@ -69,9 +96,13 @@ func buildUpstreamRequest(r *http.Request, url string) *http.Request {
 
 func forwardRequest(w http.ResponseWriter, r *http.Request, proxyClient *http.Client, baseURL string, requestURL string, timeout time.Duration) (int, error) {
 
-	upstreamReq := buildUpstreamRequest(r, baseURL+requestURL)
+	upstreamReq := buildUpstreamRequest(r, baseURL, requestURL)
 	if upstreamReq.Body != nil {
 		defer upstreamReq.Body.Close()
+	}
+
+	if _, exists := os.LookupEnv("write_request_uri"); exists {
+		log.Printf("forwardRequest: %s %s\n", upstreamReq.Host, upstreamReq.URL.String())
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -115,9 +146,9 @@ type PrometheusFunctionNotifier struct {
 }
 
 // Notify records metrics in Prometheus
-func (p PrometheusFunctionNotifier) Notify(method string, URL string, statusCode int, duration time.Duration) {
+func (p PrometheusFunctionNotifier) Notify(method string, URL string, originalURL string, statusCode int, duration time.Duration) {
 	seconds := duration.Seconds()
-	serviceName := getServiceName(URL)
+	serviceName := getServiceName(originalURL)
 
 	p.Metrics.GatewayFunctionsHistogram.
 		WithLabelValues(serviceName).
@@ -134,7 +165,16 @@ func getServiceName(urlValue string) string {
 	var serviceName string
 	forward := "/function/"
 	if strings.HasPrefix(urlValue, forward) {
-		serviceName = urlValue[len(forward):]
+		// With a path like `/function/xyz/rest/of/path?q=a`, the service
+		// name we wish to locate is just the `xyz` portion.  With a postive
+		// match on the regex below, it will return a three-element slice.
+		// The item at index `0` is the same as `urlValue`, at `1`
+		// will be the service name we need, and at `2` the rest of the path.
+		matcher := functionMatcher.Copy()
+		matches := matcher.FindStringSubmatch(urlValue)
+		if len(matches) == hasPathCount {
+			serviceName = matches[nameIndex]
+		}
 	}
 	return strings.Trim(serviceName, "/")
 }
@@ -144,8 +184,8 @@ type LoggingNotifier struct {
 }
 
 // Notify a log about a request
-func (LoggingNotifier) Notify(method string, URL string, statusCode int, duration time.Duration) {
-	log.Printf("Forwarded [%s] to %s - [%d] - %f seconds", method, URL, statusCode, duration.Seconds())
+func (LoggingNotifier) Notify(method string, URL string, originalURL string, statusCode int, duration time.Duration) {
+	log.Printf("Forwarded [%s] to %s - [%d] - %f seconds", method, originalURL, statusCode, duration.Seconds())
 }
 
 // SingleHostBaseURLResolver resolves URLs against a single BaseURL
@@ -180,4 +220,38 @@ func (f FunctionAsHostBaseURLResolver) Resolve(r *http.Request) string {
 	}
 
 	return fmt.Sprintf("http://%s%s:%d", svcName, suffix, watchdogPort)
+}
+
+// TransparentURLPathTransformer passes the requested URL path through untouched.
+type TransparentURLPathTransformer struct {
+}
+
+// Transform returns the URL path unchanged.
+func (f TransparentURLPathTransformer) Transform(r *http.Request) string {
+	return r.URL.Path
+}
+
+// FunctionPrefixTrimmingURLPathTransformer removes the "/function/servicename/" prefix from the URL path.
+type FunctionPrefixTrimmingURLPathTransformer struct {
+}
+
+// Transform removes the "/function/servicename/" prefix from the URL path.
+func (f FunctionPrefixTrimmingURLPathTransformer) Transform(r *http.Request) string {
+	ret := r.URL.Path
+
+	if ret != "" {
+		// When forwarding to a function, since the `/function/xyz` portion
+		// of a path like `/function/xyz/rest/of/path` is only used or needed
+		// by the Gateway, we want to trim it down to `/rest/of/path` for the
+		// upstream request.  In the following regex, in the case of a match
+		// the r.URL.Path will be at `0`, the function name at `1` and the
+		// rest of the path (the part we are interested in) at `2`.
+		matcher := functionMatcher.Copy()
+		parts := matcher.FindStringSubmatch(ret)
+		if len(parts) == hasPathCount {
+			ret = parts[pathIndex]
+		}
+	}
+
+	return ret
 }

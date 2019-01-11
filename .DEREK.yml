@@ -1,19 +1,22 @@
 maintainers:
  - alexellis
+ - stefanprodan
  - rgee0
  - johnmccabe
- - kenfdev
+ - LucasRoesler
  - BurtonR
+ - kenfdev
  - ivanayov
- - stefanprodan
- - affix
  - viveksyngh
  - martindekov
  - ewilde
  - bartsmykla
- - LucasRoesler
  - s8sg
+ - affix
 
 features:
  - dco_check
  - comments
+ - pr_description_required
+
+contributing_url: https://github.com/openfaas/faas/blob/master/CONTRIBUTING.md

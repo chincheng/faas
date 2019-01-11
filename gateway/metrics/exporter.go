@@ -14,6 +14,7 @@ import (
 
 	"log"
 
+	"github.com/openfaas/faas-provider/auth"
 	"github.com/openfaas/faas/gateway/requests"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -22,13 +23,15 @@ import (
 type Exporter struct {
 	metricOptions MetricOptions
 	services      []requests.Function
+	credentials   *auth.BasicAuthCredentials
 }
 
 // NewExporter creates a new exporter for the OpenFaaS gateway metrics
-func NewExporter(options MetricOptions) *Exporter {
+func NewExporter(options MetricOptions, credentials *auth.BasicAuthCredentials) *Exporter {
 	return &Exporter{
 		metricOptions: options,
 		services:      []requests.Function{},
+		credentials:   credentials,
 	}
 }
 
@@ -57,11 +60,14 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 func (e *Exporter) StartServiceWatcher(endpointURL url.URL, metricsOptions MetricOptions, label string, interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	quit := make(chan struct{})
+
+	timeout := 3 * time.Second
+
 	proxyClient := http.Client{
 		Transport: &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
 			DialContext: (&net.Dialer{
-				Timeout:   3 * time.Second,
+				Timeout:   timeout,
 				KeepAlive: 0,
 			}).DialContext,
 			MaxIdleConns:          1,
@@ -77,6 +83,9 @@ func (e *Exporter) StartServiceWatcher(endpointURL url.URL, metricsOptions Metri
 			case <-ticker.C:
 
 				get, _ := http.NewRequest(http.MethodGet, endpointURL.String()+"system/functions", nil)
+				if e.credentials != nil {
+					get.SetBasicAuth(e.credentials.User, e.credentials.Password)
+				}
 
 				services := []requests.Function{}
 				res, err := proxyClient.Do(get)

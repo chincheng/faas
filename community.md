@@ -2,26 +2,38 @@
 
 Welcome to the OpenFaaS community page where you can find:
 
-* Accolades and function providers/back-ends
-* Events for 2017/18
-* Blog posts and write-ups for 2017/18
-* Repos - projects / samples / use cases
+* [Industry awards, notable mentions and books](#industry-awards-notable-mentions-and-books)
+* [Function Providers/Back-ends](#openfaas-providers)
+
+* Events
+    * [2017](#events-in-2017) [2018](#events-in-2018) [2019](#events-in-2019)
+
+* Blog posts and write-ups
+    * [2017](#blog-posts-and-write-ups-2017) [2018](#blog-posts-and-write-ups-2018) [2019](#blog-posts-and-write-ups-2019)
+
+* [Repositories - Projects, Samples, and Use Cases](#repositories)
 
 There are several key GitHub repositories for the project which are available under the [openfaas](https://github.com/openfaas) organisation. Incubator and experimental projects are under the [openfaas-incubator](https://github.com/openfaas-incubator) organisation.
 
-* How to submit a link to this page
+#### How to submit a link to this page
 
 It would be great to hear from you especially if you have any of the above and want to share it with the rest of the community. Pull Request or submit a Github Issue.
 
 > Note: You will need to sign-off the commit too using `git commit -s` or add `Signed-off-by: {your full name} <{your email address}>` to the commit message when using the UI.
 
-### Industry awards and mentions
+### Industry awards, notable mentions and books
+
+[Back to top](#openfaas-community)
 
 | Award/Mention                                          | Author(s)       | Source     | Date        |
 |---------------------------------------------------------------------|--------------|----------|-------------|
+| [Battle Over Serverless Computing Frameworks to Heat Up in 2019](https://www.itbusinessedge.com/articles/battle-over-serverless-computing-frameworks-to-heat-up-in-2019.html) | Mike Vizard | itbusinessedge.com | 03-Jan-2019 |
+| 🏆🏆 [2018 Bossie Award Best OSS Cloud Computing](https://www.infoworld.com/article/3306455/cloud-computing/the-best-open-source-software-for-cloud-computing.html#slide13) | Jonathan Freeman et al. | InfoWorld.com | 26-Sep-2018 |
 | [KubeWeekly #145](https://mailchi.mp/cncf/kubeweekly-145?e=5c7c372824) | [KubeWeekly](https://twitter.com/kubeweekly?lang=en) | mailchi.mp | 15-Aug-2018 |
+| [Book: Docker for Serverless Applications with OpenFaaS - featuring OpenFaaS](https://www.packtpub.com/mapt/book/virtualization_and_cloud/9781788835268) | Chanwit Kaewkasi | packtpub.com | 01-Apr-2018 |
 | [The Cube interview at Cisco DevNet Create](https://www.youtube.com/watch?v=J8UYZ1GXNTQ) | The Cube | Youtube.com | 11-Apr-2018
 | [VMware hires OpenFaaS Founder](https://thenewstack.io/vmware-hires-openfaas-founder-dell-drops-code-initiative-2/) | The New Stack | thenewstack.io | 21-Feb-2018 |
+| [Book: Kubernetes for Serverless Applications - featuring OpenFaaS](https://www.packtpub.com/mapt/book/networking_and_servers/9781788620376) |  Russ McKendrick | packtpub.com | 01-Jan-2018
 | [OpenFaaS added to CNCF Cloud Native Landscape - Serverless/Event-based](https://github.com/cncf/landscape/blob/master/landscape/CloudNativeLandscape_latest.jpg) | [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/) | Github | 23-Oct-2017 |
 | [OpenFaaS: Package any Binary or Code as a Serverless Function](https://thenewstack.io/openfaas-put-serverless-function-container/) | Joab Jackson | The New Stack | 9-Oct-2017 |
 | [Functions-as-a-Service Landscape](https://medium.com/memory-leak/this-year-gartner-added-serverless-to-its-hype-cycle-of-emerging-technologies-reflecting-the-5dfe43d818f0) | Astasia Myers | Redpoint Ventures | 4-Oct-2017 |
@@ -29,33 +41,88 @@ It would be great to hear from you especially if you have any of the above and w
 | [Open source project uses Docker for serverless computing](http://www.infoworld.com/article/3184757/open-source-tools/open-source-project-uses-docker-for-serverless-computing.html#tk.twt_ifw)| Serdar Yegulalp  | InfoWorld (from IDG)  | 27-Mar-2017 |
 
 ### OpenFaaS providers
-| Project name and description                                         | Author     | Site      | Status      | Official
-|----------------------------------------------------------------------|------------|-----------|-------------|----------|
-| [faas-netes](https://github.com/openfaas/faas-netes) - Kubernetes provider | OpenFaaS | github.com | Supported | Yes |
-| [faas-swarm](https://github.com/openfaas/faas-swarm) - Docker Swarm provider | OpenFaaS | github.com | Supported | Yes |
-| [faas-fargate](https://github.com/ewilde/faas-fargate) - AWS Fargate provider | Edward Wilde | github.com | Incubation | Community |
-| [faas-nomad](https://github.com/hashicorp/faas-nomad) - Nomad provider | Nic Jackson (Hashicorp) | github.com | Incubation  | Community |
-| [faas-rancher](https://github.com/kenfdev/faas-rancher) - Rancher/Cattle provider | Ken Fukuyama | github.com | Incubation | Community |
-| [faas-dcos](https://github.com/realbot/faas-dcos) - DCOS provider | Alberto Quario | github.com | Inception  | Community |
-| [faas-hyper](https://github.com/hyperhq/faas-hyper) - Hyper.sh provider | Hyper | github.com | Inception |  n/a |
-| [faas-guardian](https://github.com/nwright-nz/openfaas-guardian-backend) - Guardian provider | Nigel Wright | github.com | Inception |  n/a |
-| [faas-ecs](https://github.com/stack360/faas-ecs) | Xicheng Chang (Huawei) | github.com | Inception | n/a |
+
+[Back to top](#openfaas-community)
+
+Official providers developed and supported by the OpenFaaS project
+
+| Project name and description                                         | Author     | Site      | Status      |
+|----------------------------------------------------------------------|------------|-----------|-------------|
+| **faas-netes**- Kubernetes provider | OpenFaaS | [github.com](https://github.com/openfaas/faas-netes) | Supported |
+| **faas-swarm** - Docker Swarm provider | OpenFaaS | [github.com](https://github.com/openfaas/faas-swarm) | Supported |
+| **openfaas-operator** - Kubernetes Operator provider | OpenFaaS | [github.com](https://github.com/openfaas-incubator/openfaas-operator) | Incubation |
+
+Community providers actively being developed and/or supported by a third-party
+
+| Project name and description                                         | Author     | Site      | Status      |
+|----------------------------------------------------------------------|------------|-----------|-------------|
+| **faas-fargate** - AWS Fargate provider | Edward Wilde | [github.com](https://github.com/ewilde/faas-fargate) | Incubation |
+| **faas-nomad** - Nomad provider | Nic Jackson (Hashicorp) | [github.com](https://github.com/hashicorp/faas-nomad) | Incubation  |
+| **faas-rancher** - Rancher/Cattle provider | Ken Fukuyama | [github.com](https://github.com/kenfdev/faas-rancher) | Inception |
+| **faas-dcos** - DCOS provider | Alberto Quario | [github.com](https://github.com/realbot/faas-dcos) | Inception  |
+| **faas-hyper** - Hyper.sh provider | Hyper | [github.com](https://github.com/hyperhq/faas-hyper) | Inception |
+| **faas-guardian** - Guardian provider | Nigel Wright | [github.com](https://github.com/nwright-nz/openfaas-guardian-backend) | Inception |
+| **faas-ecs** | Xicheng Chang (Huawei) | [github.com](https://github.com/stack360/faas-ecs) | Inception |
 
 Key:
 
-* Supported - stable and supported by the OpenFaaS project
-* Community - actively being developed, support provided by a third-party
+(Status)
+
 * Incubation - actively being developed, but not stable
 * Inception - more work needed. May work in happy path scenario, but unlikely to be suitable for production
+
+### 2019
+
+#### Events in 2019
+[Back to top](#openfaas-community)
+
+| Event name and description                                          | Speaker      | Location | Date        |
+|---------------------------------------------------------------------|--------------|----------|-------------|
+| [Docker and serverless: meetup](https://events.docker.com/events/details/docker-randstad-presents-docker-and-serverless/#/) | Edward Wilde | Utrecht, Netherlands | 24-Jan-2019 |
+| [Serverless Architecture Conf: OpenFaaS - Keeping Serverless Simple](https://serverless-architecture.io/serverless-platforms-technology) | John McCabe | The Hague, Netherlands | 9-Apr-2019 |
+| [Jax - Serverless and Functions as a Service mit Java, Docker und OpenFaaS](https://jax.de/cloud-container-serverless/serverless-und-functions-as-a-service-mit-java-docker-und-openfaas/) | Dr. Halil-Cem Gürsoy | Mainz, Germany | 6-May-2019 |
+
+
+#### Blog posts and write-ups 2019
+[Back to top](#openfaas-community)
+
+| Blog/repo name and description                                          | Author       | Site     | Date        |
+|---------------------------------------------------------------------|--------------|----------|-------------|
+| [Get Started with OpenFaaS and KinD](https://blog.alexellis.io/get-started-with-openfaas-and-kind/) | Alex Ellis | alexellis.io | 10-Jan-2019 |
+| [Transmute launches blockchain decentralised app engine using OpenFaaS](https://www.enterprisetimes.co.uk/2019/01/09/transmute-launches-blockchain-decentralised-app-engine/) | Charles Brett | enterprisetimes.co.uk | 09-Jan-2019
+| [Bash Functions as a Service](https://medium.com/@thomas.shaw78/bash-functions-as-a-service-b4033bc1ee97) | Thomas Shaw | medium.com | 02-Jan-2019 |
+| [Deploy OpenFaaS with MicroK8s](https://johnmccabe.net/technology/projects/openfaas-on-microk8s/) | John McCabe | johnmccabe.net | 01-Jan-2019 |
+| [4 Top Technology Predictions for 2019](https://medium.com/@filipSk/4-top-technology-predictions-for-2019-c9ddc9c345bd) | Filip Cieker | medium.com | 01-Jan-2019 |
 
 ### 2018
 
 #### Events in 2018
+[Back to top](#openfaas-community)
 
 | Event name and description                                          | Speaker      | Location | Date        |
 |---------------------------------------------------------------------|--------------|----------|-------------|
-| [Introducing OpenFaaS Cloud, a Developer-Friendly CI/CD Pipeline for Serverless](https://osseu18.sched.com/event/FxXx/introducing-openfaas-cloud-a-developer-friendly-cicd-pipeline-for-serverless-alex-ellis-openfaas-project-vmware) | Alex Ellis | Edinburgh, Scotland | 22-Oct-2018 |
-| [Goto conf - Serverless Beyond the Hype](https://gotocph.com/2018/sessions/592) | Alex Ellis | Copenhagen, DK | 19-Nov-2018 |
+| [Serverless, KubeCon and Kubernetes the easy way](https://www.meetup.com/Cloud-Native-Computing-Paris/events/257113168/) | Edward Wilde | Paris | 19-Dec-2018 |
+| [KubeCon + CloudNativeCon: Digital Transformation of Vision Banco Paraguay with Serverless Functions](https://sched.co/GraO) | Alex Ellis & Patricio Diaz | Seattle, WA | 13-Dec-2018 |
+| [Serverless com OpenFaaS e PHP @ PHP Conference Brazil](https://phpconference.com.br) | Fernando Silva | Porto Alegre, BR | 07-Dec-2018 |
+| [The FaaS & The Furious](https://www.meetup.com/CloudAustin/events/gxwbkpyxpbbc/) | Burton Rheutan | Austin, TX | 27-Nov-2018 |
+| [GOTO Copenhagen: Serverless Beyond the Hype](https://gotocph.com/2018/sessions/592) | Alex Ellis | Copenhagen, DK | 19-Nov-2018 |
+| [OpenFaaS workshop @ Capitole du Libre](https://2018.capitoledulibre.org/) | [Laurent Grangeau](https://twitter.com/laurentgrangeau) <br /> [Adrien Blind](https://twitter.com/adrienBlind) <br /> [Ludovic Piot](https://twitter.com/lpiot)| Toulouse, France | 18-Nov-2018 |
+| [OpenFaas on Kubernetes](https://www.meetup.com/kubernetes-openshift-India-Meetup/events/255794614) | Vivek Singh| Bangalore, IN | 17-Nov-2018 |
+| [🚀 2+ years of feedback @ Capitole du Libre](https://2018.capitoledulibre.org/) | [Laurent Grangeau](https://twitter.com/laurentgrangeau) <br /> [Adrien Blind](https://twitter.com/adrienBlind) <br /> [Ludovic Piot](https://twitter.com/lpiot) | Toulouse, France | 17-Nov-2018 |
+| [Functions as a Service - The Easy Way](https://www.istacon.org) | [Ivana Yovcheva](https://twitter.com/ivanabyov) | Sofia, Bulgaria | 15-Nov-2018 |
+| [OpenFaaS : a serverless framework on top of Docker and Kubernetes @ DevOpsDDay](https://2018.devops-dday.com/) | [Laurent Grangeau](https://twitter.com/laurentgrangeau) | Marseille, France | 15-Nov-2018 |
+| [ Serverless Computing London: FaaS and Furious – 0 to Serverless in 60 Seconds, Anywhere](https://serverlesscomputing.london/sessions/faas-furious-0-serverless-60-seconds-anywhere/) | Alex Ellis | London, UK | 12-Nov-2018 |
+| [Open Source Summit Europe: Introducing OpenFaaS Cloud, a Developer-Friendly CI/CD Pipeline for Serverless](https://osseu18.sched.com/event/FxXx/introducing-openfaas-cloud-a-developer-friendly-cicd-pipeline-for-serverless-alex-ellis-openfaas-project-vmware) | Alex Ellis | Edinburgh, Scotland | 22-Oct-2018 |
+| Exploring the serverless framework with OpenFaaS @ DevFest Nantes | [Emmanuel Lebeaupin](https://twitter.com/elebeaup) | Nantes, France | 19-Oct-2018 |
+| [Serverlessconf Tokyo 2018 Contributor Day](https://serverless.connpass.com/event/103404/) | Ken Fukuyama | Tokyo, JP | 13-Oct-2018 |
+| [DevOpenSpace - Mühelos Serverless mit GitOps](https://github.com/fpommerening/DevOpenSpace2018) | Frank Pommerening | Leipzig, Germany | 12-Oct-2018 |
+| [ScotlandPHP - Starting your Serverless Journey with OpenFaaS](https://conference.scotlandphp.co.uk/) | John McCabe | Edinburgh, Scotland | 6-Oct-2018 |
+| [VMUG Ireland - Serverless, OpenFaaS and GitOps on Kubernetes](https://community.vmug.com/events/event-description?CalendarEventKey=081889a6-3ea0-451b-b5df-e3985fbe8256&CommunityKey=8c80c6de-4f79-4717-b7d1-55a43ba44624) | John McCabe | Dublin, Ireland | 4-Oct-2018 |
+| [Writing Serverless functions in Python](https://www.openfest.org/2018/en/) | [Ivana Yovcheva](https://twitter.com/ivanabyov) | Sofia, Bulgaria | 3-Nov-2018 |
+| [Serverless functions made simple with Kubernetes (lightning talk)](https://www.openfest.org/2018/en/) | [Ivana Yovcheva](https://twitter.com/ivanabyov) | Sofia, Bulgaria | 3-Nov-2018 |
+| [Serverlessconf Tokyo 2018 OpenFaaS Workshop](http://tokyo.serverlessconf.io/workshops.html) | Ken Fukuyama | Tokyo, JP | 28-Sep-2018 |
+| [Building Cloud-Native Apps - FaaS: The Swiss Army Knife of Cloud Native](https://www.meetup.com/Cloud_Native_Meetup/events/254232936/) | James McAfee | Sydney, Australia | 12-Sep-2018 |
+| [ Creating Your First Serverless Function with OpenFaaS - VMworld 2018](https://www.youtube.com/watch?v=xiLkq1zQldE&t) | Kendrick Coleman | Las Vegas, NV, USA |28-Aug-2018 |
 | [ John Callaway: .NET Core on a Raspberry Pi Cluster with Docker and OpenFaaS](https://secure.meetup.com/register/?ctx=ref) | John Callaway | Orlando, FL, USA |16-Aug-2018 |
 | [Cloud Native Glasgow - Serverless on Kubernetes](https://www.meetup.com/CloudNativeGlasgow/events/251913059/) | John McCabe | Glasgow, UK | 5-July-2018 |
 | [Opsview & Kubernetes (incl. OpenFaaS)](https://www.meetup.com/Birmingham-digital-development-Meetup/events/250680464/) | Opsview | Birmingham, UK | 28-June-2018 |
@@ -93,15 +160,40 @@ Key:
 | [Talk: Building a Raspberry Pi Kubernetes Cluster with OpenFaaS](https://ndc-london.com/talk/building-a-raspberry-pi-kubernetes-cluster-and-running-.net-core/) | Alex Ellis / Scott Hanselman | London | 18-Jan-2018 |
 
 #### Blog posts and write-ups 2018
+[Back to top](#openfaas-community)
 
 | Blog/repo name and description                                          | Author       | Site     | Date        |
 |---------------------------------------------------------------------|--------------|----------|-------------|
+| [3 Serverless Platform Approaches to Consider](https://searchmicroservices.techtarget.com/tip/3-serverless-platform-approaches-to-consider) | Twain Taylor | techtarget.com | 31-Dec-2018 |
+| [Tracing Your Functions](http://www.nohuddleoffense.de/2018/12/27/tracing-your-functions/) | Thijs Metsch | nohuddleoffense.de | 27-Dec-2018 |
+| [Routing URLs to OpenFaaS Functions](https://kamal.io/blog/routing-urls-to-openfaas-functions) | Kamal Nasser | kamal.io | 10-Dec-2018 |
+| [Writing Serverless Functions in Crystal](https://medium.com/@t_pei/serverless-crystal-14b22ecc4352) | Thomas Peikert | medium.com | 05-Dec-2018 |
+| [.Net Core – OpenFaas – MongoDB](https://marcussmallman.io/2018/11/27/net-core-openfaas-mongodb/) | Marcus Smallman | marcussmallman.io | 28-Nov-2018 |
+| [Micro-tutorial: use Redis & Node.js with OpenFaaS](https://gist.github.com/alexellis/e05a7b573ae22b209f0214d5766ff07e) | Alex Ellis | github.com | 24-Nov-2018 |
+| [🇬🇧 Use Vert.x with OpenFaaS](https://k33g.gitlab.io/articles/2018-11-11-OPENFAAS.html) | Philippe Charrière | GitLab.com | 11-Nov-2018 |
+| [Serverless Computing: More Time for the Code](https://www.golem.de/news/serverless-computing-mehr-zeit-fuer-den-code-1811-137516-5.html) | Valentin Höbel | golem.de | 08-Nov-2018 |
+| [Using GraphQL in OpenFaaS functions](https://padiazg.github.io/graphql-on-opesfaas/) | Patricio Díaz | padiazg.github.io | 03-Nov-2018 |
+| [Micro-tutorial: Learn how to run OpenFaaS Function Store functions on Knative](https://gist.github.com/alexellis/5c1587cf24b634f940764427d50719bf) | Alex Ellis | github.com | 30-Oct-2018 |
+| [🇬🇧-use-express-with-openfaas](https://k33g.gitlab.io/articles/2018-10-28-OPENFAAS.html) | Philippe Charrière | GitLab.com | 28-Oct-2018 |
+| [First contact with OpenFaaS](https://k33g.gitlab.io/articles/2018-10-20-OPENFAAS.html) | Philippe Charrière | GitLab.com | 20-Oct-2018 |
+| [ACI Information Group: OpenFaaS among wish-list items for AWS Lambda](https://searchaws.techtarget.com/opinion/Lambda-support-for-OpenFaaS-among-wish-list-items) | Chris Moyer | techtarget.com | 11-Oct-2018 |
+| [Deploy a python app using OpenFaaS](https://saurabhlondhe.github.io/technology/linux/2018/10/10/python-app-with-openfaas.html) | Saurabh Londhe | saurabhlondhe.github.io | 10-Oct-2018 |
+| [Serverless R functions with OpenFaaS](https://medium.com/@keyunie/serverless-r-functions-with-openfaas-1cd34905834d) | Keyu Nie | medium.com | 30-Sept-2018 |
+| [Serverless Data Fetching stack with OpenFaaS & OpenFlow](https://blog.lapw.at/serverless-data-fetching-stack-openfaas-openflow/) | Quentin Lapointe | blog.lapw.at | 23-Sept-2018 |
+| [How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04) | Marko Mudrinić | digitalocean.com | 19-Sept-2018 |
+| [Vert.x + Graal = Java for Serverless = ❤️!](https://www.jetdrone.xyz/2018/09/07/Vertx-Serverless-5mb.html) | Paulo Lopes | jetdrone.xyz | 07-Sept-2018 |
+| [OpenFass 介绍及源码分析 (OpenFaaS Deep-Dive / Code-Analysis) - Chinese](https://www.youtube.com/watch?v=bZtgrAVR9HQ&feature=youtu.be) | Zhu Zhenfeng | youtube.com | 07-Sept-2018 |
+| [Introducing stateless microservices for OpenFaaS](https://www.openfaas.com/blog/stateless-microservices/) | Alex Ellis | openfaas.com | 05-Sept-2018 |
+| [Serverless com OpenFaaS e PHP (Portuguese)](https://medium.com/@FernandoDebrand/serverless-com-openfaas-e-php-3dce499f8062) | Fernando Silva | medium.com | 04-Sept-2018 |
+| [Deploy OpenFaaS and Kubernetes on DigitalOcean with Ansible](https://www.openfaas.com/blog/deploy-digitalocean-ansible/) | Richard Gee | openfaas.com | 27-Aug-2018 |
+| [Cerner ShipIt Hackathon - ShipIt XII](https://engineering.cerner.com/blog/shipit-xii/) | Caitie Oder | cerner.com | 30-Aug-2918 |
 | [5 tips and tricks for the OpenFaaS CLI](https://www.openfaas.com/blog/five-cli-tips/) | Alex Ellis | openfaas.com | 21-Aug-2018 |
 | [Multi-stage Serverless on Kubernetes with OpenFaaS and GKE](https://www.openfaas.com/blog/gke-multi-stage/) | Stefan Prodan | openfaas.com | 14-Aug-2018 |
-| [Managing state for Serverless Functions with Minio](https://blog.lapw.at/stateful-serverless-stack-openfaas-minio/) | Quentin Lapointe | lapw.at | 16-Aug-2018 | 
+| [Managing state for Serverless Functions with Minio](https://blog.lapw.at/stateful-serverless-stack-openfaas-minio/) | Quentin Lapointe | lapw.at | 14-Aug-2018 |
 | [Monitor Arista Cloud vision network devices with OpenFaaS](https://github.com/burnyd/cvp-serverless-openfaas) | Daniel Hertzberg | github.com | 13-Aug-2018 |
 | [Serverless email sender using OpenFaaS and .NET Core](https://medium.com/@paulius.juozelskis/serverless-email-sender-using-openfaas-and-net-core-afdef152359) | Paulius Juozelskis | medium.com | 13-Aug-2018 |
 | [VMware CodeHouse: A Great Insight into the Future of Software Engineering](https://blogs.vmware.com/opensource/2018/08/07/vmware-codehouse-empowers-women/) | Jonas Rosland | blogs.vmware.com | 7-Aug-2018 |
+| [OpenFaaS on Cisco DevNet Sandbox](https://developer.cisco.com/docs/sandbox/#!cloud/all-cloud-sandboxes) | [Cisco DevNet Sandbox](https://developer.cisco.com/sandbox) | [Cisco DevNet](https://developer.cisco.com) | 8-Aug-2018 |
 | [How to run Rust in OpenFaaS](https://booyaa.wtf/2018/run-rust-in-openfaas/) | Mark Sta Ana | booyaa.wtf | 4-Aug-2018 |
 | [Scale to Zero and Back Again with OpenFaaS](https://www.openfaas.com/blog/zero-scale/) | Alex Ellis | openfaas.com | 25-July-2018 |
 | [PHP and OpenFaaS](https://mfyu.co.uk/post/php-and-openfaas) | Matt Brunt | mfyu.co.uk | 21-July-2018 |
@@ -120,6 +212,7 @@ Key:
 | [Securing Kubernetes for OpenFaaS and beyond](https://www.twistlock.com/2018/03/20/securing-kubernetes-openfaas-beyond) | Daniel Shapira | twistlock.com | 20-Mar-2018 |
 | [What Is OpenFaaS and How Can It Drive Innovation?](https://www.contino.io/insights/what-is-openfaas-and-why-is-it-an-alternative-to-aws-lambda-an-interview-with-creator-alex-ellis) | Ben Tannahill | contino.com | 19-Mar-2018 |
 | [Installing and securing OpenFaaS on a Google Cloud virtual machine](https://alexanderdevelopment.net/post/2018/02/25/installing-and-securing-openfaas-on-a-google-cloud-virtual-machine/) | Lucas Alexander | alexanderdevelopment.net | 25-Feb-2018 |
+| [OpenFaaS on a Kubernetes clusterの仕組み](https://qiita.com/TakanariKo/items/5e3117ea7c3afa948de5) | Takanari Ko | qiita.com | 21-Feb-2018 |
 | [VMware Welcomes Alex Ellis](https://blogs.vmware.com/opensource/2018/02/19/vmware-welcomes-alex-ellis/) | VMware team | vmware.com | 19-Feb-2018 |
 | [I'm going to be working on OpenFaaS full-time](https://blog.alexellis.io/full-time-openfaas/) | Alex Ellis | alexellis.io | 19-Feb-2018 |
 | [Stop installing CLI tools on your build server: CLI-as-a-Function with OpenFaaS](https://medium.com/@burtonr/stop-installing-cli-tools-on-your-build-server-cli-as-a-function-with-openfaas-80dd8d6be611) | Burton Rheutan | medium.com/@burtonr | 12-Feb-2018 |
@@ -132,10 +225,12 @@ Key:
 | [Raspberry Pi Cluster with Docker and OpenFaaS (and SETI)](http://6figuredev.com/learning/raspberry-pi-cluster-with-docker-and-openfaas-and-seti/) | John Callaway | 6FigureDev.com | 17-Jan-2018 |
 | [Podcast - Episode 022 – OpenFaaS with Docker Captain Alex Ellis](http://6figuredev.com/podcast/episode-022-openfaas-with-docker-captain-alex-ellis/) | The 6 Figure Developer Podcast | 6FigureDev.com | 15-Jan-2018 |
 | [Google Home + OpenFaaS: Write your own voice controlled functions](https://medium.com/@burtonr/google-home-openfaas-write-your-own-voice-controlled-functions-11f195398e3f) | Burton Rheutan | medium.com/@burtonr | 06-Jan-2018 |
+| [OpenFaaS At The Helm w/ Kubernetes in the DevNet Sandbox](https://blogs.cisco.com/developer/openfaas-at-the-helm-w-kubernetes-in-the-devnet-sandbox) | [Cisco DevNet Sandbox](https://developer.cisco.com/sandbox) | [Cisco DevNet](https://developer.cisco.com) | 2-Jan-2018 |
 
 ### 2017
 
 #### Events in 2017
+[Back to top](#openfaas-community)
 
 | Event name and description                                          | Speaker      | Location | Date        |
 |---------------------------------------------------------------------|--------------|----------|-------------|
@@ -165,12 +260,14 @@ Key:
 | [FaaS on Hacker News](https://news.ycombinator.com/item?id=13920588)| Alex Ellis   | Online   | 22-Mar-2017 |
 
 
-### Blog posts and write-ups - 2017
+### Blog posts and write-ups 2017
+[Back to top](#openfaas-community)
 
 | Blog/repo name and description                                          | Author       | Site     | Date        |
 |---------------------------------------------------------------------|--------------|----------|-------------|
 | [Podcast - Hanselminutes - Serverless and OpenFaas with Alex Ellis](https://www.hanselminutes.com) | Scott Hanselman | hanselminutes.com | 29-Dec-2017
 | [Podcast - How Serverless Technologies Impact Kubernetes](https://thenewstack.io/serverless-technologies-impact-kubernetes/) | The New Stack Makers | thenewstack.io | 28-Dec-2017 |
+| [OpenFaaS快速入门指南 (OpenFaaS Quick Start Guide) - Chinese](https://jimmysong.io/posts/openfaas-quick-start/) | Jimmy Song | jimmysong.io | 26-Dec-2017 |
 | [OpenFaaS on DCOS](https://medium.com/@realrealbot/openfaas-on-dcos-9d5927f4e725) | Alberto Quario | medium.com/@realrealbot  | 20-Dec-2017
 | [Deploying Kubernetes On-Premise with RKE and deploying OpenFaaS on it — Part 1](https://medium.com/@kenfdev/deploying-kubernetes-on-premise-with-rke-and-deploying-openfaas-on-it-part-1-69a35ddfa507) | Ken Fukuyama | medium.com/@kenfdev  | 10-Dec-2017
 | [Deploying Kubernetes On-Premise with RKE and deploying OpenFaaS on it — Part 2](https://medium.com/@kenfdev/deploying-kubernetes-on-premise-with-rke-and-deploying-openfaas-on-it-part-2-cc14004e7007) | Ken Fukuyama | medium.com/@kenfdev  | 10-Dec-2017
@@ -228,12 +325,19 @@ Key:
 | [Functions as a Service (FaaS) in French](http://blog.alexellis.io/fonction-service/) | Alex Ellis | alexellis.io | 13-Jan-2017 |
 | [Functions as a Service (FaaS)](http://blog.alexellis.io/functions-as-a-service/) | Alex Ellis | alexellis.io | 4-Jan-2017 |
 
-### Repos - projects / samples / use cases
+### Repositories
+#### Projects, Samples, and Use Cases
+[Back to top](#openfaas-community)
 
 You can also find cool projects or submit your own to the [faas-and-furious organisation](https://github.com/faas-and-furious). Contact Alex for details on how.
 
 | Project name and description                                         | Author     | Site      | Date        |
 |----------------------------------------------------------------------|------------|-----------|-------------|
+| [OpenFaas CSharp MongoDB Template](https://github.com/Marcus-Smallman/csharp-kestrel-mongo) | Marcus Smallman | github.com | 28-Nov-2018 |
+| [OpenFaas Java 8 + Vert.x Template](https://gitlab.com/openfaas-experiments/java-8-vert-x-template) | Philippe Charrière | gitlab.com | 11-Nov-2018 |
+| [Faasflow - faas workflow as a function](https://github.com/s8sg/faasflow) | Swarvanu Sengupta | github.com | 11-Nov-2018 |
+| [OpenFaaS Crystal Template](https://github.com/TPei/crystal_openfaas) | Thomas Peikert | github.com | 26-Oct-2018 |
+| [OpenFaaS Terraform Provider](https://github.com/ewilde/terraform-provider-openfaas) | Edward Wilde | github.com | 12-Oct-2018 |
 | [OpenFaaS Swift Template](https://github.com/affix/openfaas-swift-template) | Keiran Smith | github.com | 22-May-2018 |
 | [OpenFaaS Code Eval](https://github.com/testdrivenio/openfass-code-eval) | Michael Herman | github.com | 30-Mar-2018 |
 | [OpenFaaS RESTful API w/ Node and Postgres](https://github.com/testdrivenio/openfass-node-restful-api) | Michael Herman | github.com | 26-Jan-2018 |
